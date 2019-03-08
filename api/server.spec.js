@@ -34,7 +34,7 @@ describe('server.js', () => {
 
     describe('POST /games', () => {
 
-        const game = {
+        const gameSuccess = {
             title: 'Pacman',
             genre: 'Arcade',
             releaseYear: 1980
@@ -44,7 +44,7 @@ describe('server.js', () => {
 
         beforeEach(async () => {
             await db('games').truncate();
-            res = await request(server).post('/games').send(game)
+            res = await request(server).post('/games').send(gameSuccess)
             return res;
         })
 
@@ -58,6 +58,17 @@ describe('server.js', () => {
 
         it('If successful, inserts game into db and returns added game', async () => {
             expect(res.body.count).toEqual([1]);
+        });
+
+        it('Returns status 422 if information incomplete in request', async () => {
+            await db('games').truncate();
+            const gameFail = {
+                title: 'Pacman',
+                releaseYear: 1980
+            }
+            const resFail = await request(server).post('/games').send(gameFail)
+            expect(resFail.status).toBe(422);
+            expect(resFail.body.message).toBe('Title and Genre required')
         });
 
     });

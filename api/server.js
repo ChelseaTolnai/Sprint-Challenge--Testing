@@ -14,13 +14,17 @@ server.get('/', (req, res) => {
 
 server.post('/games', async (req, res) => {
     let { title, genre, releaseYear } = req.body;
-    const game = { title, genre, releaseYear }
-    try {
-        const count = await db('games').insert(game);
-        res.status(201).json({ count });
-
-    } catch (err) {
-        res.status(500).json(err)
+    const game = { title, genre, releaseYear };
+    if (!title || !genre) {
+        res.status(422).json({message: 'Title and Genre required'})
+    } else {
+        try {
+            const count = await db('games').insert(game);
+            res.status(201).json({ count });
+    
+        } catch (err) {
+            res.status(500).json(err)
+        }
     }
 });
 
