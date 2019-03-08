@@ -73,4 +73,43 @@ describe('server.js', () => {
 
     });
 
+    describe('GET /games', () => {
+
+        const games = [
+            { title: 'Pacman', genre: 'Arcade', releaseYear: 1980 },
+            { title: 'Super Mario Bros', genre: 'Arcade'},
+            { title: 'Ms. Pacman', genre: 'Arcade'}
+        ]
+
+        beforeEach(async () => {
+            await db('games').truncate();
+            await db('games').insert(games.map(game => game));
+        })
+
+        it('If successful, returns status 200', async () => {
+            const res = await request(server).get('/games');
+            expect(res.status).toBe(200);
+        });
+
+        it('If successful, returns JSON', async () => {
+            const res = await request(server).get('/games');
+            expect(res.type).toBe('application/json');
+        });
+
+        it('If successful, returns array of games', async () => {
+            const res = await request(server).get('/games');
+            expect(res.body).toHaveLength(3);
+            expect(res.body[1].title).toEqual(games[1].title);
+            expect(res.body[1].genre).toEqual(games[1].genre);
+            expect(res.body[1].releaseYear).toBeNull();
+        });
+
+        it('Returns empty array if no games in db', async () => {
+            await db('games').truncate();
+            const resEmpty = await request(server).get('/games')
+            expect(resEmpty.body).toEqual([]);
+        });
+
+    });
+
 });

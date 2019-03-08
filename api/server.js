@@ -21,10 +21,18 @@ server.post('/games', async (req, res) => {
         try {
             const count = await db('games').insert(game);
             res.status(201).json({ count });
-    
         } catch (err) {
             res.status(500).json(err)
         }
+    }
+});
+
+server.get('/games', async (req, res) => {
+    try {
+        const games = await db('games');
+        res.status(200).json(games);
+    } catch (err) {
+        res.status(500).json(err)
     }
 });
 
