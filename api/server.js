@@ -41,4 +41,18 @@ server.get('/games', async (req, res) => {
     }
 });
 
+server.get('/games/:id', async (req, res) => {
+    const games = await db('games').where('id', '=', req.params.id);
+    if (games.length === 0) {
+        res.status(404).json({message: 'Game by specified ID does not exist'})
+    } else {
+        try {
+            const game = await db('games').where('id', '=', req.params.id).first();
+            res.status(200).json(game);
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    }
+});
+
 module.exports = server;

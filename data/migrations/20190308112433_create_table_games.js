@@ -1,5 +1,6 @@
 exports.up = function(knex, Promise) {
 	return knex.schema.createTable('games', function(tbl) {
+		tbl.increments();
         tbl.string('title', 255).unique().notNullable();
         tbl.string('genre', 255).notNullable();
 		tbl.integer('releaseYear');
