@@ -55,4 +55,18 @@ server.get('/games/:id', async (req, res) => {
     }
 });
 
+server.delete('/games/:id', async (req, res) => {
+    const games = await db('games').where('id', '=', req.params.id);
+    if (games.length === 0) {
+        res.status(404).json({message: 'Game by specified ID does not exist'})
+    } else {
+        try {
+            await db('games').where('id', '=', req.params.id).del();
+            res.status(200).json({message: 'Game deleted'});
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    }
+});
+
 module.exports = server;

@@ -56,7 +56,7 @@ describe('server.js', () => {
             expect(res.type).toBe('application/json');
         });
 
-        it('If successful, inserts game into db and returns added game', async () => {
+        it('If successful, inserts game into db and returns count of games added', async () => {
             expect(res.body.count).toEqual([1]);
         });
 
@@ -92,8 +92,8 @@ describe('server.js', () => {
 
         const games = [
             { title: 'Pacman', genre: 'Arcade', releaseYear: 1980 },
-            { title: 'Super Mario Bros', genre: 'Arcade'},
-            { title: 'Ms. Pacman', genre: 'Arcade'}
+            { title: 'Super Mario Bros', genre: 'Arcade' },
+            { title: 'Ms. Pacman', genre: 'Arcade' }
         ]
 
         beforeEach(async () => {
@@ -131,11 +131,11 @@ describe('server.js', () => {
 
         const games = [
             { title: 'Pacman', genre: 'Arcade', releaseYear: 1980 },
-            { title: 'Super Mario Bros', genre: 'Arcade'},
-            { title: 'Ms. Pacman', genre: 'Arcade'}
+            { title: 'Super Mario Bros', genre: 'Arcade' },
+            { title: 'Ms. Pacman', genre: 'Arcade' }
         ]
 
-        const id = 1
+        const id = 1;
 
         beforeEach(async () => {
             await db('games').truncate();
@@ -156,14 +156,14 @@ describe('server.js', () => {
             const res = await request(server).get(`/games/${id}`);
             expect(res.body).toBeDefined();
             expect(res.body.id).toBe(id);
-            expect(res.body.title).toBe(games[id-1].title); // id-1 because primary keys increments start at 1 not 0 (index)
-            expect(res.body.genre).toBe(games[id-1].genre); // id-1 because primary keys increments start at 1 not 0 (index)
+            expect(res.body.title).toBe(games[id - 1].title); // id-1 because primary keys increments start at 1 not 0 (index)
+            expect(res.body.genre).toBe(games[id - 1].genre); // id-1 because primary keys increments start at 1 not 0 (index)
         });
 
         it('Returns status 404 if game by specified ID does not exist', async () => {
             let nonID = 6;
             const noID = await db('games').where('id', '=', nonID).first();
-            expect(noID).toBeUndefined;
+            expect(noID).toBeUndefined();
 
             const resFail = await request(server).get(`/games/${nonID}`);
             expect(resFail.status).toBe(404);
@@ -172,4 +172,53 @@ describe('server.js', () => {
 
     });
 
+    describe('DELETE /games/:id', () => {
+
+        const games = [
+            { title: 'Pacman', genre: 'Arcade', releaseYear: 1980 },
+            { title: 'Super Mario Bros', genre: 'Arcade' },
+            { title: 'Ms. Pacman', genre: 'Arcade' }
+        ]
+
+        const id = 2;
+
+        beforeEach(async () => {
+            await db('games').truncate();
+            await db('games').insert(games.map(game => game));
+        })
+
+        it('If successful, returns status 200', async () => {
+            const res = await request(server).delete(`/games/${id}`);
+            expect(res.status).toBe(200);
+        });
+
+        it('If successful, returns JSON', async () => {
+            const res = await request(server).delete(`/games/${id}`);
+            expect(res.type).toBe('application/json');
+        });
+
+        it('If successful, deletes game from db and returns successful message', async () => {
+            let games = await db('games');
+            expect(games).toHaveLength(3);
+
+            const res = await request(server).delete(`/games/${id}`);
+            expect(res.body.message).toBe('Game deleted');
+
+            const deleted = await db('games').where('id', '=', id).first();
+            expect(deleted).toBeUndefined();
+
+            games = await db('games');
+            expect(games).toHaveLength(2);
+        });
+
+        it('Returns status 404 if game by specified ID does not exist', async () => {
+            let nonID = 6;
+            const noID = await db('games').where('id', '=', nonID).first();
+            expect(noID).toBeUndefined;
+
+            const resFail = await request(server).delete(`/games/${nonID}`);
+            expect(resFail.status).toBe(404);
+            expect(resFail.body.message).toBe('Game by specified ID does not exist');
+        });
+    });
 });
