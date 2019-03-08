@@ -71,6 +71,21 @@ describe('server.js', () => {
             expect(resFail.body.message).toBe('Title and Genre required')
         });
 
+        it('Returns status 405 if request title is not unique', async () => {
+            const gameDupTitle = {
+                title: 'Pacman',
+                genre: 'Arcade Game',
+                releaseYear: 1989
+            }
+
+            const dupTitle = await db('games').select('title').where('title', '=', gameDupTitle.title).first();
+            expect(dupTitle.title).toBe(gameDupTitle.title);
+
+            const resFail = await request(server).post('/games').send(gameDupTitle)
+            expect(resFail.status).toBe(405);
+            expect(resFail.body.message).toBe('Title must be unique');
+        });
+
     });
 
     describe('GET /games', () => {

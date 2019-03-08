@@ -18,11 +18,16 @@ server.post('/games', async (req, res) => {
     if (!title || !genre) {
         res.status(422).json({message: 'Title and Genre required'})
     } else {
-        try {
-            const count = await db('games').insert(game);
-            res.status(201).json({ count });
-        } catch (err) {
-            res.status(500).json(err)
+        const dupTitle = await db('games').select('title').where('title', '=', title).first();
+        if (dupTitle) {
+            res.status(405).json({message: 'Title must be unique'})
+        } else {
+            try {
+                const count = await db('games').insert(game);
+                res.status(201).json({ count });
+            } catch (err) {
+                res.status(500).json(err)
+            }
         }
     }
 });
