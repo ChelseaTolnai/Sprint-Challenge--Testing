@@ -25,8 +25,21 @@ In this challenge use `Test Driven Development` to build a RESTful API using Nod
 Demonstrate your understanding of this week's concepts by answering the following free-form questions. Edit this document to include your answers after each question. Make sure to leave a blank line above and below your answer so it is clear and easy to read by your project manager.
 
 1. In Jest, what are the differences between `describe()` and `it()` globals, and what are good uses for them?
+
+Describe() creates a block that groups together several related tests. Describe() is not required but it does help organize tests and they can be nested to create a hierarchy of tests. 
+
+It() is just an alias for test(). At least one of this type of global is required in a test file. It() is a method which runs a test.
+
 1. What is the point of `Test Driven Development`? What do you think about this approach?
+
+The point of TDD is to write tests before writing code to ensure that the percentage of code being testing automatically is extremely high and in turn reduces the likelihood of having bugs. The process of TDD is to write a test first, run the test and expect it to fail at first, then write the minimal amount of code to have the expected test pass, rerun the test to confirm it passes. After it passes you can then of course refactor the code as necessary and repeat the process. 
+
+I believe this approach is difficult to master. First, because you have to write tests before writing code which is difficult to anticipate what an expected outcome will be that you want to test for before writing the code and getting an outcome. Also it is very tedious as you basically have to write multiple tests for practically every piece or unit of code you anticipate writing. However, this tediousness yields a high reward if done correctly as the code and test coverage is usually 90-100 percent and adding new code is easier and less likely to break further on.
+
 1. Mention three types of automated tests.
+
+Snapshot testing, Acceptance testing, Component testing
+
 
 ## Project Set Up
 
